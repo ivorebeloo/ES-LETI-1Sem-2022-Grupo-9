@@ -9,18 +9,30 @@ import com.google.gson.Gson;
 public class Calendar {
 
 	public static void getCalendar() throws Exception {
-//		FileWriter f = new File("calendar.json");
-//		 PrintStream o = new PrintStream(f);
+		System.out.println("------------------------------NOVA LEITURA------------------------------------------------");	
+		String inputLine;
 		URL calendarURL = new URL("https://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=imsro@iscte.pt&password=aXWvsniEJIyWHxKZ4X4VMovKuXhJEAt7j1u450VOnlnp28QCJIhhwZWCaIP4CWrOGFpden1pjFDY3qQjO549FL3EMNv3lEpXQopNsMJdHdlkIAkGSFmnbYV0LD4Dziwg");
 		URLConnection URL = calendarURL.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(URL.getInputStream()));
-		String inputLine;
-		while ((inputLine = br.readLine()) != null) 
-			System.out.println(new Gson().toJson(inputLine));
-			//System.out.println(inputLine);
-		br.close();
 		
+		File file = new File("JSONCalendar/" + "Calendar"+ ".json");
+
+		if (!file.exists()){
+			file.createNewFile();
+		}	
+		FileWriter fileWriter = new FileWriter(file,false);
+		
+		while ((inputLine = br.readLine()) != null) {
+			//System.out.println(new Gson().toJson(inputLine));
+			//System.out.println(inputLine);
+			fileWriter.write(inputLine + "\n");
 	}
+		fileWriter.close();
+		br.close();
+		System.out.println("JA ACABEI");
+	}
+		
+
 	
 	public static void main(String[] args) throws Exception {
         getCalendar();

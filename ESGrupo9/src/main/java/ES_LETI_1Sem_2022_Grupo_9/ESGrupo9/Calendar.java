@@ -29,6 +29,7 @@ public class Calendar {
 		URL calendarURL = new URL(inputLine);
 		URLConnection URL = calendarURL.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(URL.getInputStream()));
+
 		
 	//	File file = new File("JSONCalendar/" + nomeSemEspaco+"URL"+ ".json");
 		File file = new File("JSONCalendar/" +"Calendar"+ ".json");
@@ -42,6 +43,18 @@ public class Calendar {
 			//System.out.println(new Gson().toJson(inputLine));
 			//System.out.println(inputLine);
 			fileWriter.write(inputLine + "\n");
+
+	//	File file = new File("JSONCalendar/" + "Calendar"+ ".json");
+	//	String inputLine;
+	//	FileWriter fileWriter = new FileWriter(file,false);
+		while ((inputLine = br.readLine()) != null) {
+			fileWriter.write(new Gson().toJson(inputLine) + "\n");
+			//System.out.println(inputLine);
+	}
+		fileWriter.close();
+		br.close();
+		System.out.println("JA ACABEI");
+
 	}
 		fileWriter.close();
 		br.close();

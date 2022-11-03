@@ -1,6 +1,8 @@
 package ES_LETI_1Sem_2022_Grupo_9.ESGrupo9;
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
+
 import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.Gson;
@@ -9,13 +11,27 @@ import com.google.gson.Gson;
 public class Calendar {
 
 	public static void getCalendar() throws Exception {
-		System.out.println("------------------------------NOVA LEITURA------------------------------------------------");	
-		String inputLine;
-		URL calendarURL = new URL("https://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=imsro@iscte.pt&password=aXWvsniEJIyWHxKZ4X4VMovKuXhJEAt7j1u450VOnlnp28QCJIhhwZWCaIP4CWrOGFpden1pjFDY3qQjO549FL3EMNv3lEpXQopNsMJdHdlkIAkGSFmnbYV0LD4Dziwg");
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Insira aqui o seu URI:" + "\n");
+	
+		//0System.out.println("------------------------------NOVA LEITURA------------------------------------------------");	
+		
+		String inputLine =sc.nextLine();
+		sc.close();
+		
+//		System.out.println("Insira aqui o seu nome:" + "\n");
+//		Scanner scanner = new Scanner(System.in);
+//		String nome= scanner.nextLine();
+//		String nomeSemEspaco=nome.replaceAll("\\s+","");
+//		scanner.close();
+		
+		URL calendarURL = new URL(inputLine);
 		URLConnection URL = calendarURL.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(URL.getInputStream()));
 		
-		File file = new File("JSONCalendar/" + "Calendar"+ ".json");
+	//	File file = new File("JSONCalendar/" + nomeSemEspaco+"URL"+ ".json");
+		File file = new File("JSONCalendar/" +"Calendar"+ ".json");
 
 		if (!file.exists()){
 			file.createNewFile();
@@ -31,7 +47,7 @@ public class Calendar {
 		br.close();
 		System.out.println("JA ACABEI");
 	}
-		
+	
 
 	
 	public static void main(String[] args) throws Exception {

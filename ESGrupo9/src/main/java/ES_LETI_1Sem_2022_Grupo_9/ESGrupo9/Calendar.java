@@ -86,10 +86,16 @@ public static void main (String[] args) throws Exception  {
 		inputline.contains("SUMMARY:") || inputline.contains("UID:") || inputline.contains("DESCRIPTION:") 
 		|| inputline.contains("LOCATION:"))
 			jsonString = jsonString + "\"" + inputline.replaceFirst(":","\":\"") + "\",";
-		else jsonString = b.chop(StringUtils.chop(jsonString)) + inputline + "\",";
+		else jsonString = StringUtils.chop(StringUtils.chop(jsonString)) + inputline + "\",";
 	}
-			
-			
-			
+	jsonString += "]";
+	writeHTML(jsonString);
+	System.out.println(jsonString);
+	System.out.println(jsonString);
+	br.close();
+						
 }
 }
+
+//public static void writeHTML(String json){
+//	String btal ="<html

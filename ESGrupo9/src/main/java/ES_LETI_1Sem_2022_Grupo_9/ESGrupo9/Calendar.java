@@ -72,7 +72,7 @@ public class Calendar {
 		boolean isInsideEvent =false;
 		while ((inputline=br.readLine()) != null){
 			if(inputline.contains("BEGIN:VEVENT")){
-				jsonString =jsonString + "(";
+				jsonString =jsonString + "{";
 				isInsideEvent = true;
 				continue;
 			}
@@ -80,7 +80,7 @@ public class Calendar {
 				continue;
 			}
 			if(inputline.contains("END:VEVENT")){
-				jsonString =jsonString + ")";
+				jsonString =jsonString + "}";
 				isInsideEvent = false;
 				continue;
 			}
@@ -90,7 +90,7 @@ public class Calendar {
 				jsonString = jsonString + "\"" + inputline.replaceFirst(":","\":\"") + "\",";
 			else jsonString = StringUtils.chop(StringUtils.chop(jsonString)) + inputline + "\",";
 		}
-		jsonString += "]";
+		if (isInsideEvent) jsonString += "}]"; else jsonString += "]";
 		writeHTML(jsonString);
 		System.out.println(jsonString);
 		br.close();

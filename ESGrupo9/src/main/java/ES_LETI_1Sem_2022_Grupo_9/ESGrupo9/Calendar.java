@@ -17,7 +17,7 @@ public class Calendar {
 		URLConnection URL = calendarURL.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(URL.getInputStream()));
 		String inputline;
-		String jsonString = "[\n"; 
+		String jsonString = "["; 
 		boolean isInsideEvent = false;
 		while((inputline = br.readLine()) != null){
 			if(inputline.contains("BEGIN:VEVENT")){
@@ -33,17 +33,19 @@ public class Calendar {
 				isInsideEvent = false;
 				continue;
 			}
-			if(inputline.contains("DTSTAMP:") || inputline.contains("DSTART:")|| inputline.contains("DTEND:") ||
+			if(inputline.contains("DTSTAMP:") || inputline.contains("DTSTART:")|| inputline.contains("DTEND:") ||
 					inputline.contains("SUMMARY:") || inputline.contains("UID:") || inputline.contains("DESCRIPTION:") 
-					|| inputline.contains("LOCATION:"))
+					|| inputline.contains("LOCATION:")) {
 				jsonString = jsonString + "\"" + inputline.replaceFirst(":","\":\"") + "\",";
-			else jsonString = jsonString.substring(0, jsonString.length() - 3) + inputline.substring(1,inputline.length()) + "\",";
+			} else {
+				jsonString = jsonString.substring(0, jsonString.length() - 2) + inputline.substring(1,inputline.length()) + "\",";
+			}
 		}
 		if(isInsideEvent) jsonString += "}]";
 		else jsonString += "]";
+		br.close();
 		writeHTML(jsonString);
 		System.out.println(jsonString);
-		br.close();
 	}
 
 	public static void writeHTML(String json) throws IOException{

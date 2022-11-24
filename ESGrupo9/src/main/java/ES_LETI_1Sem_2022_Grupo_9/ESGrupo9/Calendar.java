@@ -1,78 +1,27 @@
 package ES_LETI_1Sem_2022_Grupo_9.ESGrupo9;
 import java.awt.Desktop;
-import java.io.*;
-import java.net.*;
-import java.util.Scanner;
-import javax.net.ssl.HttpsURLConnection;
-import com.google.gson.Gson;
-import org.apache.commons.lang3.StringUtils;
-
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
 public class Calendar {
-	//
-	//	public static void getCalendar() throws Exception {
-	//
-	//		Scanner sc = new Scanner(System.in);
-	//		System.out.println("Insira aqui o seu URI:" + "\n");	
-	//		String inputLine =sc.nextLine();
-	//		sc.close();
-	//		System.out.println("URI liso");
-	//
-	//		//		System.out.println("Insira aqui o seu nome:" + "\n");
-	//		//		Scanner scanner = new Scanner(System.in);
-	//		//		String nome= scanner.nextLine();
-	//		//		String nomeSemEspaco=nome.replaceAll("\\s+","");
-	//		//		scanner.close();
-	//
-	//		URL calendarURL = new URL(inputLine);
-	//		URLConnection URL = calendarURL.openConnection();
-	//		BufferedReader br = new BufferedReader(new InputStreamReader(URL.getInputStream()));
-	//
-	//
-	//		//	File file = new File("JSONCalendar/" + nomeSemEspaco+"URL"+ ".json");
-	//		//File file = new File("JSONCalendar/" +"Calendar"+ ".json");
-	//		File file = new File("calendar.json");
-	//		if (!file.exists()){
-	//			file.createNewFile();
-	//		}	
-	//
-	//		FileWriter fileWriter = new FileWriter(file,false);
-	//
-	//		while ((inputLine = br.readLine()) != null) {
-	//			//fileWriter.write(inputLine + "\n");
-	//			fileWriter.write(new Gson().toJson(inputLine) + "\n");
-	//		}
-	//
-	//		fileWriter.close();
-	//		br.close();
-	//		System.out.println("JA ACABEI");
-	//
-	//	}
-	//
-	//
-	//	public static void main(String[] args) throws Exception {
-	//		getCalendar();
-	//	}
-	//
-	//
-	//
-	//
-	//}
-
 
 	public static void main (String[] args) throws Exception  {
-
-		String httpsURL ="https://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=imsro@iscte.pt&password=aXWvsniEJIyWHxKZ4X4VMovKuXhJEAt7j1u450VOnlnp28QCJIhhwZWCaIP4CWrOGFpden1pjFDY3qQjO549FL3EMNv3lEpXQopNsMJdHdlkIAkGSFmnbYV0LD4Dziwg";
+		String httpsURL = "https://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=imsro@iscte.pt&password=aXWvsniEJIyWHxKZ4X4VMovKuXhJEAt7j1u450VOnlnp28QCJIhhwZWCaIP4CWrOGFpden1pjFDY3qQjO549FL3EMNv3lEpXQopNsMJdHdlkIAkGSFmnbYV0LD4Dziwg";
 		URL calendarURL = new URL(httpsURL);
 		URLConnection URL = calendarURL.openConnection();
 		BufferedReader br = new BufferedReader(new InputStreamReader(URL.getInputStream()));
-
 		String inputline;
-		String jsonString = "["; 
-		boolean isInsideEvent =false;
-		while ((inputline=br.readLine()) != null){
+		String jsonString = "[\n"; 
+		boolean isInsideEvent = false;
+		while((inputline = br.readLine()) != null){
 			if(inputline.contains("BEGIN:VEVENT")){
-				jsonString =jsonString + "{";
+				jsonString = jsonString + "{";
 				isInsideEvent = true;
 				continue;
 			}
@@ -80,7 +29,7 @@ public class Calendar {
 				continue;
 			}
 			if(inputline.contains("END:VEVENT")){
-				jsonString =jsonString + "}";
+				jsonString = jsonString + "},";
 				isInsideEvent = false;
 				continue;
 			}
@@ -88,18 +37,17 @@ public class Calendar {
 					inputline.contains("SUMMARY:") || inputline.contains("UID:") || inputline.contains("DESCRIPTION:") 
 					|| inputline.contains("LOCATION:"))
 				jsonString = jsonString + "\"" + inputline.replaceFirst(":","\":\"") + "\",";
-			else jsonString = StringUtils.chop(StringUtils.chop(jsonString)) + inputline + "\",";
+			else jsonString = jsonString.substring(0, jsonString.length() - 3) + inputline.substring(1,inputline.length()) + "\",";
 		}
-		if (isInsideEvent) jsonString += "}]"; else jsonString += "]";
+		if(isInsideEvent) jsonString += "}]";
+		else jsonString += "]";
 		writeHTML(jsonString);
 		System.out.println(jsonString);
 		br.close();
-
 	}
 
 	public static void writeHTML(String json) throws IOException{
 		String site = "\r\n"
-				
 				+ "<!DOCTYPE html>\r\n"
 				+ "<html lang=\"en\">\r\n"
 				+ "	<head>\r\n"
@@ -127,10 +75,11 @@ public class Calendar {
 				+ "		data:tabledata, //load initial data into table\r\n"
 				+ "		layout:\"fitColumns\", //fit columns to width of table (optional)\r\n"
 				+ "		columns:[ //Define Table Columns\r\n"
-				+ "			{title:\"Name\", field:\"name\", sorter:\"string\", width:150},\r\n"
-				+ "			{title:\"Age\", field:\"age\", sorter:\"number\", hozAlign:\"left\", formatter:\"progress\"},\r\n"
-				+ "			{title:\"Favourite Color\", field:\"col\", sorter:\"string\", headerSort:false},\r\n"
-				+ "			{title:\"Date Of Birth\", field:\"dob\", sorter:\"date\", hozAlign:\"center\"},\r\n"
+				+ "			{title:\"Data de Início\", field:\"DSTART:\", sorter:\"date\", width:150},\r\n"
+				+ "			{title:\"Data de Fim\", field:\"DTEND:\", sorter:\"date\", hozAlign:\"left\", formatter:\"progress\"},\r\n"
+				+ "			{title:\"Unidade Curricular\", field:\"sala\", sorter:\"string\", headerSort:false},\r\n"
+				+ "			{title:\"Sala\", field:\"sala\", sorter:\"string\", headerSort:false},\r\n"
+				+ "			{title:\"Sumário\", field:\"SUMMARY\", sorter:\"string\", hozAlign:\"center\"},\r\n"
 				+ "		],\r\n"
 				+ "	});\r\n"
 				+ "	\r\n"
@@ -141,11 +90,11 @@ public class Calendar {
 				+ "</script>\r\n"
 				+ "	</body>\r\n"
 				+ "</html>";
-		
-		BufferedWriter bw = new BufferedWriter(new FileWriter("Calendario.html"));
+		BufferedWriter bw = new BufferedWriter(new FileWriter("ES-LETI-1Sem-2022-Grupo-9.html"));
 		bw.write(site);
 		bw.close();
-		File htmlFile = new File("Calendario.html");
+		File htmlFile = new File("ES-LETI-1Sem-2022-Grupo-9.html");
 		Desktop.getDesktop().browse(htmlFile.toURI());
 	}
+
 }

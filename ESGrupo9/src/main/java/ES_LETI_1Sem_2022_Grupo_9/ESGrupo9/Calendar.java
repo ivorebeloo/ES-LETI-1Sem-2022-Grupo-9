@@ -1,102 +1,400 @@
 package ES_LETI_1Sem_2022_Grupo_9.ESGrupo9;
-import java.awt.Desktop;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 
-public class Calendar {
+import javax.swing.*;
+import javax.swing.event.EventListenerList;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
+import java.awt.geom.Rectangle2D;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Locale;
 
-	public static void main (String[] args) throws Exception  {
-		String httpsURL = "https://fenix.iscte-iul.pt/publico/publicPersonICalendar.do?method=iCalendar&username=imsro@iscte.pt&password=aXWvsniEJIyWHxKZ4X4VMovKuXhJEAt7j1u450VOnlnp28QCJIhhwZWCaIP4CWrOGFpden1pjFDY3qQjO549FL3EMNv3lEpXQopNsMJdHdlkIAkGSFmnbYV0LD4Dziwg";
-		URL calendarURL = new URL(httpsURL);
-		URLConnection URL = calendarURL.openConnection();
-		BufferedReader br = new BufferedReader(new InputStreamReader(URL.getInputStream()));
-		String inputline;
-		String jsonString = "["; 
-		boolean isInsideEvent = false;
-		while((inputline = br.readLine()) != null){
-			if(inputline.contains("BEGIN:VEVENT")){
-				jsonString = jsonString + "{";
-				isInsideEvent = true;
-				continue;
-			}
-			if(!isInsideEvent){
-				continue;
-			}
-			if(inputline.contains("END:VEVENT")){
-				jsonString = jsonString + "},";
-				isInsideEvent = false;
-				continue;
-			}
-			if(inputline.contains("DTSTAMP:") || inputline.contains("DTSTART:")|| inputline.contains("DTEND:") ||
-					inputline.contains("SUMMARY:") || inputline.contains("UID:") || inputline.contains("DESCRIPTION:") 
-					|| inputline.contains("LOCATION:")) {
-				jsonString = jsonString + "\"" + inputline.replaceFirst(":","\":\"") + "\",";
-			} else {
-				jsonString = jsonString.substring(0, jsonString.length() - 2) + inputline.substring(1,inputline.length()) + "\",";
-			}
-		}
-		if(isInsideEvent) jsonString += "}]";
-		else jsonString += "]";
-		br.close();
-		writeHTML(jsonString);
-		System.out.println(jsonString);
-	}
+//FDS Ano:2022 ,Mes:10 ,Dia:15 ,horaInicio:10 ,minutoInicio:0 
+//Mes 2,3,4,5,8,9,10,11,12  Ano 2023
+public abstract class Calendar extends JComponent {
+    protected static final LocalTime START_TIME = LocalTime.of(8, 0);
+    protected static final LocalTime END_TIME = LocalTime.of(22, 0);
 
-	public static void writeHTML(String json) throws IOException{
-		String site = "\r\n"
-				+ "<!DOCTYPE html>\r\n"
-				+ "<html lang=\"en\">\r\n"
-				+ "	<head>\r\n"
-				+ "		<link href=\"/css/tabulator/5.4/tabulator.min.css\" rel=\"stylesheet\">\r\n"
-				+ "	</head>\r\n"
-				+ "	<body>\r\n"
-				+ "		<div id=\"example-table\"></div>\r\n"
-				+ "				\r\n"
-				+ "				<script src=\"https://cdn.jsdelivr.net/npm/luxon/build/global/luxon.min.js\"></script>\r\n"
-				+ "				\r\n"
-				+ "		<script type=\"text/javascript\" src=\"/js/tabulator/5.4/tabulator.min.js\"></script>\r\n"
-				+ "		<script type=\"text/javascript\">\r\n"
-				+ "	//sample data\r\n"
-				+ "	var tabledata = [\r\n"
-				// concatenar o conteúdo do JSON
-				+ "		{id:1, name:\"Oli Bob\", age:\"12\", col:\"red\", dob:\"12/08/2017\"},\r\n"
-				+ "		{id:2, name:\"Mary May\", age:\"1\", col:\"blue\", dob:\"14/05/1982\"},\r\n"
-				+ "		{id:3, name:\"Christine Lobowski\", age:\"42\", col:\"green\", dob:\"22/05/1982\"},\r\n"
-				+ "		{id:4, name:\"Brendon Philips\", age:\"125\", col:\"orange\", dob:\"01/08/1980\"},\r\n"
-				+ "		{id:5, name:\"Margret Marmajuke\", age:\"16\", col:\"yellow\", dob:\"31/01/1999\"},\r\n"
-				+ "	];\r\n"
-				+ "	\r\n"
-				+ "	var table = new Tabulator(\"#example-table\", {\r\n"
-				+ "		height:200, // set height of table to enable virtual DOM\r\n"
-				+ "		data:tabledata, //load initial data into table\r\n"
-				+ "		layout:\"fitColumns\", //fit columns to width of table (optional)\r\n"
-				+ "		columns:[ //Define Table Columns\r\n"
-				+ "			{title:\"Data de Início\", field:\"DSTART:\", sorter:\"date\", width:150},\r\n"
-				+ "			{title:\"Data de Fim\", field:\"DTEND:\", sorter:\"date\", hozAlign:\"left\", formatter:\"progress\"},\r\n"
-				+ "			{title:\"Unidade Curricular\", field:\"sala\", sorter:\"string\", headerSort:false},\r\n"
-				+ "			{title:\"Sala\", field:\"sala\", sorter:\"string\", headerSort:false},\r\n"
-				+ "			{title:\"Sumário\", field:\"SUMMARY\", sorter:\"string\", hozAlign:\"center\"},\r\n"
-				+ "		],\r\n"
-				+ "	});\r\n"
-				+ "	\r\n"
-				+ "	//trigger an alert message when the row is clicked\r\n"
-				+ "	table.on(\"rowClick\", function(e, row){\r\n"
-				+ "		alert(\"Row \" + row.getIndex() + \" Clicked!!!!\");\r\n"
-				+ "	});\r\n"
-				+ "</script>\r\n"
-				+ "	</body>\r\n"
-				+ "</html>";
-		BufferedWriter bw = new BufferedWriter(new FileWriter("ES-LETI-1Sem-2022-Grupo-9.html"));
-		bw.write(site);
-		bw.close();
-		File htmlFile = new File("ES-LETI-1Sem-2022-Grupo-9.html");
-		Desktop.getDesktop().browse(htmlFile.toURI());
-	}
+    protected static final int MIN_WIDTH = 600;
+    protected static final int MIN_HEIGHT = MIN_WIDTH;
 
+    protected static final int HEADER_HEIGHT = 30;
+    protected static final int TIME_COL_WIDTH = 100;
+
+    // An estimate of the width of a single character (not exact but good
+    // enough)
+    private static final int FONT_LETTER_PIXEL_WIDTH = 7;
+    private ArrayList<CalendarEvent> events;
+    private double timeScale;
+    private double dayWidth;
+    private Graphics2D g2;
+
+    private EventListenerList listenerList = new EventListenerList();
+
+    public Calendar() {
+        this(new ArrayList<>());
+    }
+
+    Calendar(ArrayList<CalendarEvent> events) {
+        this.events = events;
+        setupEventListeners();
+        setupTimer();
+    }
+
+    public static LocalTime roundTime(LocalTime time, int minutes) {
+        LocalTime t = time;
+
+        if (t.getMinute() % minutes > minutes / 2) {
+            t = t.plusMinutes(minutes - (t.getMinute() % minutes));
+        } else if (t.getMinute() % minutes < minutes / 2) {
+            t = t.minusMinutes(t.getMinute() % minutes);
+        }
+
+        return t;
+    }
+
+    private void setupEventListeners() {
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (!checkCalendarEventClick(e.getPoint())) {
+                    checkCalendarEmptyClick(e.getPoint());
+                }
+            }
+        });
+    }
+
+    protected abstract boolean dateInRange(LocalDate date);
+
+    private boolean checkCalendarEventClick(Point p) {
+        double x0, x1, y0, y1;
+        for (CalendarEvent event : events) {
+            if (!dateInRange(event.getDate())) continue;
+
+            x0 = dayToPixel(event.getDate().getDayOfWeek());
+            y0 = timeToPixel(event.getStart());
+            x1 = dayToPixel(event.getDate().getDayOfWeek()) + dayWidth;
+            y1 = timeToPixel(event.getEnd());
+
+            if (p.getX() >= x0 && p.getX() <= x1 && p.getY() >= y0 && p.getY() <= y1) {
+                fireCalendarEventClick(event);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkCalendarEmptyClick(Point p) {
+        final double x0 = dayToPixel(getStartDay());
+        final double x1 = dayToPixel(getEndDay()) + dayWidth;
+        final double y0 = timeToPixel(START_TIME);
+        final double y1 = timeToPixel(END_TIME);
+
+        if (p.getX() >= x0 && p.getX() <= x1 && p.getY() >= y0 && p.getY() <= y1) {
+            LocalDate date = getDateFromDay(pixelToDay(p.getX()));
+            fireCalendarEmptyClick(LocalDateTime.of(date, pixelToTime(p.getY())));
+            return true;
+        }
+        return false;
+    }
+
+    protected abstract LocalDate getDateFromDay(DayOfWeek day);
+
+    // CalendarEventClick methods
+
+    public void addCalendarEventClickListener(CalendarEventClickListener l) {
+        listenerList.add(CalendarEventClickListener.class, l);
+    }
+
+    public void removeCalendarEventClickListener(CalendarEventClickListener l) {
+        listenerList.remove(CalendarEventClickListener.class, l);
+    }
+
+    // Notify all listeners that have registered interest for
+    // notification on this event type.
+    private void fireCalendarEventClick(CalendarEvent calendarEvent) {
+        // Guaranteed to return a non-null array
+        Object[] listeners = listenerList.getListenerList();
+        // Process the listeners last to first, notifying
+        // those that are interested in this event
+        CalendarEventClickEvent calendarEventClickEvent;
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == CalendarEventClickListener.class) {
+                calendarEventClickEvent = new CalendarEventClickEvent(this, calendarEvent);
+                ((CalendarEventClickListener) listeners[i + 1]).calendarEventClick(calendarEventClickEvent);
+            }
+        }
+    }
+
+    // CalendarEmptyClick methods
+
+    public void addCalendarEmptyClickListener(CalendarEmptyClickListener l) {
+        listenerList.add(CalendarEmptyClickListener.class, l);
+    }
+
+    public void removeCalendarEmptyClickListener(CalendarEmptyClickListener l) {
+        listenerList.remove(CalendarEmptyClickListener.class, l);
+    }
+
+    private void fireCalendarEmptyClick(LocalDateTime dateTime) {
+        Object[] listeners = listenerList.getListenerList();
+        CalendarEmptyClickEvent calendarEmptyClickEvent;
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == CalendarEmptyClickListener.class) {
+                calendarEmptyClickEvent = new CalendarEmptyClickEvent(this, dateTime);
+                ((CalendarEmptyClickListener) listeners[i + 1]).calendarEmptyClick(calendarEmptyClickEvent);
+            }
+        }
+    }
+
+    private void calculateScaleVars() {
+        int width = getWidth();
+        int height = getHeight();
+
+        if (width < MIN_WIDTH) {
+            width = MIN_WIDTH;
+        }
+
+        if (height < MIN_HEIGHT) {
+            height = MIN_HEIGHT;
+        }
+
+        // Units are pixels per second
+        timeScale = (double) (height - HEADER_HEIGHT) / (END_TIME.toSecondOfDay() - START_TIME.toSecondOfDay());
+        dayWidth = (width - TIME_COL_WIDTH) / numDaysToShow();
+    }
+
+    protected abstract int numDaysToShow();
+
+    // Gives x val of left most pixel for day col
+    protected abstract double dayToPixel(DayOfWeek dayOfWeek);
+
+    private double timeToPixel(LocalTime time) {
+        return ((time.toSecondOfDay() - START_TIME.toSecondOfDay()) * timeScale) + HEADER_HEIGHT;
+    }
+
+    private LocalTime pixelToTime(double y) {
+        return LocalTime.ofSecondOfDay((int) ((y - HEADER_HEIGHT) / timeScale) + START_TIME.toSecondOfDay()).truncatedTo(ChronoUnit.MINUTES);
+    }
+
+    private DayOfWeek pixelToDay(double x) {
+        double pixel;
+        DayOfWeek day;
+        for (int i = getStartDay().getValue(); i <= getEndDay().getValue(); i++) {
+            day = DayOfWeek.of(i);
+            pixel = dayToPixel(day);
+            if (x >= pixel && x < pixel + dayWidth) {
+                return day;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        calculateScaleVars();
+        g2 = (Graphics2D) g;
+
+        // Rendering hints try to turn anti-aliasing on which improves quality
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Set background to white
+        g2.setColor(Color.white);
+        g2.fillRect(0, 0, getWidth(), getHeight());
+
+        // Set paint colour to black
+        g2.setColor(Color.black);
+
+        drawDayHeadings();
+        drawTodayShade();
+        drawGrid();
+        drawTimes();
+        drawEvents();
+        drawCurrentTimeLine();
+    }
+
+    protected abstract DayOfWeek getStartDay();
+
+    protected abstract DayOfWeek getEndDay();
+
+    private void drawDayHeadings() {
+        int y = 20;
+        int x;
+        LocalDate day;
+        DayOfWeek dayOfWeek;
+
+        for (int i = getStartDay().getValue(); i <= getEndDay().getValue(); i++) {
+            dayOfWeek = DayOfWeek.of(i);
+            day = getDateFromDay(dayOfWeek);
+
+            String text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + " " + day.getDayOfMonth() + "/" + day.getMonthValue();
+            x = (int) (dayToPixel(DayOfWeek.of(i)) + (dayWidth / 2) - (FONT_LETTER_PIXEL_WIDTH * text.length() / 2));
+            g2.drawString(text, x, y);
+        }
+    }
+
+    private void drawGrid() {
+        // Save the original colour
+        final Color ORIG_COLOUR = g2.getColor();
+
+        // Set colour to grey with half alpha (opacity)
+        Color alphaGray = new Color(128, 128, 128, 128);
+        Color alphaGrayLighter = new Color(200, 200, 200, 128);
+        g2.setColor(alphaGray);
+
+        // Draw vertical grid lines
+        double x;
+        for (int i = getStartDay().getValue(); i <= getEndDay().getValue(); i++) {
+            x = dayToPixel(DayOfWeek.of(i));
+            g2.draw(new Line2D.Double(x, HEADER_HEIGHT, x, timeToPixel(END_TIME)));
+        }
+
+        // Draw horizontal grid lines
+        double y;
+        int x1;
+        for (LocalTime time = START_TIME; time.compareTo(END_TIME) <= 0; time = time.plusMinutes(30)) {
+            y = timeToPixel(time);
+            if (time.getMinute() == 0) {
+                g2.setColor(alphaGray);
+                x1 = 0;
+            } else {
+                g2.setColor(alphaGrayLighter);
+                x1 = TIME_COL_WIDTH;
+            }
+            g2.draw(new Line2D.Double(x1, y, dayToPixel(getEndDay()) + dayWidth, y));
+        }
+
+        // Reset the graphics context's colour
+        g2.setColor(ORIG_COLOUR);
+    }
+
+    private void drawTodayShade() {
+        LocalDate today = LocalDate.now();
+
+        // Check that date range being viewed is current date range
+        if (!dateInRange(today)) return;
+
+        final double x = dayToPixel(today.getDayOfWeek());
+        final double y = timeToPixel(START_TIME);
+        final double width = dayWidth;
+        final double height = timeToPixel(END_TIME) - timeToPixel(START_TIME);
+
+        final Color origColor = g2.getColor();
+        Color alphaGray = new Color(200, 200, 200, 64);
+        g2.setColor(alphaGray);
+        g2.fill(new Rectangle2D.Double(x, y, width, height));
+        g2.setColor(origColor);
+    }
+
+    private void drawCurrentTimeLine() {
+        LocalDate today = LocalDate.now();
+
+        // Check that date range being viewed is current date range
+        if (!dateInRange(today)) return;
+
+        final double x0 = dayToPixel(today.getDayOfWeek());
+        final double x1 = dayToPixel(today.getDayOfWeek()) + dayWidth;
+        final double y = timeToPixel(LocalTime.now());
+
+        final Color origColor = g2.getColor();
+        final Stroke origStroke = g2.getStroke();
+
+        g2.setColor(new Color(255, 127, 110));
+        g2.setStroke(new BasicStroke(2));
+        g2.draw(new Line2D.Double(x0, y, x1, y));
+
+        g2.setColor(origColor);
+        g2.setStroke(origStroke);
+    }
+
+    private void drawTimes() {
+        int y;
+        for (LocalTime time = START_TIME; time.compareTo(END_TIME) <= 0; time = time.plusHours(1)) {
+            y = (int) timeToPixel(time) + 15;
+            g2.drawString(time.toString(), TIME_COL_WIDTH - (FONT_LETTER_PIXEL_WIDTH * time.toString().length()) - 5, y);
+        }
+    }
+
+    private void drawEvents() {
+        double x;
+        double y0;
+
+        for (CalendarEvent event : events) {
+            if (!dateInRange(event.getDate())) continue;
+
+            x = dayToPixel(event.getDate().getDayOfWeek());
+            y0 = timeToPixel(event.getStart());
+
+            Rectangle2D rect = new Rectangle2D.Double(x, y0, dayWidth, (timeToPixel(event.getEnd()) - timeToPixel(event.getStart())));
+            Color origColor = g2.getColor();
+            g2.setColor(event.getColor());
+            g2.fill(rect);
+            g2.setColor(origColor);
+
+            // Draw time header
+
+            // Store the current font state
+            Font origFont = g2.getFont();
+
+            final float fontSize = origFont.getSize() - 1.6F;
+
+            // Create a new font with same properties but bold
+            Font newFont = origFont.deriveFont(Font.BOLD, fontSize);
+            g2.setFont(newFont);
+
+            g2.drawString(event.getStart() + " - " + event.getEnd(), (int) x + 5, (int) y0 + 11);
+
+            // Unbolden
+            g2.setFont(origFont.deriveFont(fontSize));
+
+            // Draw the event's text
+            g2.drawString(event.getText(), (int) x+5, (int) y0 + 23);
+
+            // Reset font
+            g2.setFont(origFont);
+        }
+    }
+
+    protected double getDayWidth() {
+        return dayWidth;
+    }
+
+    // Repaints every minute to update the current time line
+    private void setupTimer() {
+        Timer timer = new Timer(1000*60, e -> repaint());
+        timer.start();
+    }
+
+    protected abstract void setRangeToToday();
+
+    public void goToToday() {
+        setRangeToToday();
+        repaint();
+    }
+
+    public void addEvent(CalendarEvent event) {
+        events.add(event);
+        repaint();
+    }
+
+    public boolean removeEvent(CalendarEvent event) {
+        boolean removed = events.remove(event);
+        repaint();
+        return removed;
+    }
+    
+  
+
+    public void setEvents(ArrayList<CalendarEvent> events) {
+        this.events = events;
+        repaint();
+    }
 }

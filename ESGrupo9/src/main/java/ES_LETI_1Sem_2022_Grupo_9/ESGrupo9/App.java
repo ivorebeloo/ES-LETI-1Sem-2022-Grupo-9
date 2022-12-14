@@ -9,9 +9,19 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+
+ /**
+ * The class Application
+ */ 
 public class App {
-	
-	public static void main(String[] args) throws Exception {
+/** 
+ *
+ * Main
+ *
+ * @param args  the args
+ * @throws   Exception 
+ */
+	public static void main(String[] args) throws Exception { 
 		JFrame frm = new JFrame();
 		ArrayList<CalendarEvent> events = new ArrayList<>();
 		ArrayList<String>httpsURLs = new ArrayList<>(4);
@@ -136,5 +146,4 @@ public class App {
 			frm.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		}
 	}
-	
 }

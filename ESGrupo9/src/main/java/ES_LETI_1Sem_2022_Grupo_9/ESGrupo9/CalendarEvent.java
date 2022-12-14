@@ -1,13 +1,10 @@
 package ES_LETI_1Sem_2022_Grupo_9.ESGrupo9;
-
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class CalendarEvent {
-
     private static final Color DEFAULT_COLOR = Color.PINK;
-
     private LocalDate date;
     private LocalTime start;
     private LocalTime end;
@@ -59,7 +56,7 @@ public class CalendarEvent {
     }
 
     public String toString() {
-        return getDate() + " " + getStart() + "-" + getEnd() + ". " + getText();
+        return "Data: " + getDate() + " " + getStart() + "-" + getEnd() + "\n Sumário: " + getText();
     }
 
     public Color getColor() {
@@ -74,13 +71,10 @@ public class CalendarEvent {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         CalendarEvent that = (CalendarEvent) o;
-
         if (!date.equals(that.date)) return false;
         if (!start.equals(that.start)) return false;
         return end.equals(that.end);
-
     }
 
     @Override
@@ -90,4 +84,5 @@ public class CalendarEvent {
         result = 31 * result + end.hashCode();
         return result;
     }
+    
 }

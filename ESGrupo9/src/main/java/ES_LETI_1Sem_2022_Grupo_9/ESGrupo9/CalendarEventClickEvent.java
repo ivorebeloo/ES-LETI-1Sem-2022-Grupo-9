@@ -12,4 +12,5 @@ public class CalendarEventClickEvent extends AWTEvent {
     public CalendarEvent getCalendarEvent() {
         return calendarEvent;
     }
+    
 }

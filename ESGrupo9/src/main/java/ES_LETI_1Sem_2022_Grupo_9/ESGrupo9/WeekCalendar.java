@@ -3,10 +3,20 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/**
+ * The class Week calendar extends calendar
+ */ 
 public class WeekCalendar extends Calendar {
 	private Week week;
 
-	public WeekCalendar(ArrayList<CalendarEvent> events) {
+	/** 
+	 *
+	 * Week calendar
+	 *
+	 * @param events  the events
+	 * @return 	public
+	 */
+	public WeekCalendar(ArrayList<CalendarEvent> events) { 
 		super(events);
 		week = new Week(LocalDate.now());
 	}
@@ -45,22 +55,42 @@ public class WeekCalendar extends Calendar {
 		return TIME_COL_WIDTH + getDayWidth() * (dayOfWeek.getValue() - 1);
 	}
 
-	public void nextWeek() {
+	/** 
+	 *
+	 * Next week
+	 *
+	 */
+	public void nextWeek() { 
 		week = week.nextWeek();
 		repaint();
 	}
 
-	public void prevWeek() {
+	/** 
+	 *
+	 * Prev week
+	 *
+	 */
+	public void prevWeek() { 
 		week = week.prevWeek();
 		repaint();
 	}
 
-	public void nextMonth() {
+	/** 
+	 *
+	 * Next month
+	 *
+	 */
+	public void nextMonth() { 
 		week = new Week(week.getDay(DayOfWeek.MONDAY).plusWeeks(4));
 		repaint();
 	}
 
-	public void prevMonth() {
+	/** 
+	 *
+	 * Prev month
+	 *
+	 */
+	public void prevMonth() { 
 		week = new Week(week.getDay(DayOfWeek.MONDAY).minusWeeks(4));
 		repaint();
 	}

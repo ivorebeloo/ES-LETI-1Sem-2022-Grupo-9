@@ -3,6 +3,9 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+ /**
+ * The class Calendar event
+ */ 
 public class CalendarEvent {
     private static final Color DEFAULT_COLOR = Color.PINK;
     private LocalDate date;
@@ -11,11 +14,30 @@ public class CalendarEvent {
     private String text;
     private Color color;
 
-    public CalendarEvent(LocalDate date, LocalTime start, LocalTime end, String text) {
+/** 
+ *
+ * It is a constructor. 
+ *
+ * @param date  the date
+ * @param start  the start
+ * @param end  the end
+ * @param text  the text
+ */
+    public CalendarEvent(LocalDate date, LocalTime start, LocalTime end, String text) { 
         this(date, start, end, text, DEFAULT_COLOR);
     }
 
-    public CalendarEvent(LocalDate date, LocalTime start, LocalTime end, String text, Color color) {
+/** 
+ *
+ * It is a constructor. 
+ *
+ * @param date  the date
+ * @param start  the start
+ * @param end  the end
+ * @param text  the text
+ * @param color  the color
+ */
+    public CalendarEvent(LocalDate date, LocalTime start, LocalTime end, String text, Color color) { 
         this.date = date;
         this.start = start;
         this.end = end;
@@ -23,52 +45,125 @@ public class CalendarEvent {
         this.color = color;
     }
 
-    public LocalDate getDate() {
+/** 
+ *
+ * Gets the date
+ *
+ * @return the date
+ */
+    public LocalDate getDate() { 
         return date;
     }
 
-    public void setDate(LocalDate date) {
+/** 
+ *
+ * Sets the date
+ *
+ * @param date  the date
+ */
+    public void setDate(LocalDate date) { 
         this.date = date;
     }
 
-    public LocalTime getStart() {
+/** 
+ *
+ * Gets the start
+ *
+ * @return the start
+ */
+    public LocalTime getStart() { 
         return start;
     }
 
-    public void setStart(LocalTime start) {
+/** 
+ *
+ * Sets the start
+ *
+ * @param start  the start
+ */
+    public void setStart(LocalTime start) { 
         this.start = start;
     }
 
-    public LocalTime getEnd() {
+/** 
+ *
+ * Gets the end
+ *
+ * @return the end
+ */
+    public LocalTime getEnd() { 
         return end;
     }
 
-    public void setEnd(LocalTime end) {
+/** 
+ *
+ * Sets the end
+ *
+ * @param end  the end
+ */
+    public void setEnd(LocalTime end) { 
         this.end = end;
     }
 
-    public String getText() {
+/** 
+ *
+ * Gets the text
+ *
+ * @return the text
+ */
+    public String getText() { 
         return text;
     }
 
-    public void setText(String text) {
+/** 
+ *
+ * Sets the text
+ *
+ * @param text  the text
+ */
+    public void setText(String text) { 
         this.text = text;
     }
 
-    public String toString() {
+/** 
+ *
+ * To string
+ *
+ * @return String
+ */
+    public String toString() { 
         return "Data: " + getDate() + " " + getStart() + "-" + getEnd() + "\n Sumário: " + getText();
     }
 
-    public Color getColor() {
+/** 
+ *
+ * Gets the color
+ *
+ * @return the color
+ */
+    public Color getColor() { 
         return color;
     }
-    
-    public void setColor(Color color){
+
+/** 
+ *
+ * Sets the color
+ *
+ * @param color  the color
+ */
+    public void setColor(Color color){ 
     	this.color=color;
     }
 
     @Override
-    public boolean equals(Object o) {
+/** 
+ *
+ * Equals
+ *
+ * @param o  the object
+ * @return boolean
+ */
+    public boolean equals(Object o) { 
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CalendarEvent that = (CalendarEvent) o;
@@ -78,7 +173,13 @@ public class CalendarEvent {
     }
 
     @Override
-    public int hashCode() {
+/** 
+ *
+ * Hash code
+ *
+ * @return int
+ */
+    public int hashCode() { 
         int result = date.hashCode();
         result = 31 * result + start.hashCode();
         result = 31 * result + end.hashCode();

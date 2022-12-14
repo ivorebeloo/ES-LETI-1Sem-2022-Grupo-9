@@ -3,10 +3,19 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+/**
+ * The class Week
+ */ 
 public class Week {
 	private ArrayList<LocalDate> days;
 
-	public Week(LocalDate date) {
+	/** 
+	 *
+	 * It is a constructor. 
+	 *
+	 * @param date  the date
+	 */
+	public Week(LocalDate date) { 
 		days = new ArrayList<>();
 		LocalDate monday = getStartOfWeek(date);
 		days.add(monday);
@@ -15,7 +24,14 @@ public class Week {
 		}
 	}
 
-	public static LocalDate getStartOfWeek(LocalDate date) {
+	/** 
+	 *
+	 * Gets the start of week
+	 *
+	 * @param date  the date
+	 * @return the start of week
+	 */
+	public static LocalDate getStartOfWeek(LocalDate date) { 
 		LocalDate day = date;
 		while (day.getDayOfWeek() != DayOfWeek.MONDAY) {
 			day = day.minusDays(1);
@@ -23,25 +39,54 @@ public class Week {
 		return day;
 	}
 
-	public LocalDate getDay(DayOfWeek dayOfWeek) {
+	/** 
+	 *
+	 * Gets the day
+	 *
+	 * @param dayOfWeek  the day of week
+	 * @return the day
+	 */
+	public LocalDate getDay(DayOfWeek dayOfWeek) { 
 		return days.get(dayOfWeek.getValue() - 1);
 	}
 
-	public Week nextWeek() {
+	/** 
+	 *
+	 * It is a constructor. 
+	 *
+	 */
+	public Week nextWeek() { 
 		final LocalDate friday = getDay(DayOfWeek.FRIDAY);
 		return new Week(friday.plusDays(3));
 	}
 
-	public Week prevWeek() {
+	/** 
+	 *
+	 * It is a constructor. 
+	 *
+	 */
+	public Week prevWeek() { 
 		final LocalDate monday = getDay(DayOfWeek.MONDAY);
 		return new Week(monday.minusDays(3));
 	}
 
-	public String toString() {
+	/** 
+	 *
+	 * To string
+	 *
+	 * @return String
+	 */
+	public String toString() { 
 		return "Week of the " + getDay(DayOfWeek.MONDAY);
 	}
 
-	public static void main(String[] args) {
+	/** 
+	 *
+	 * Main
+	 *
+	 * @param args  the args
+	 */
+	public static void main(String[] args) { 
 		LocalDate now = LocalDate.now();
 		Week currentWeek = new Week(now);
 		System.out.println(currentWeek);

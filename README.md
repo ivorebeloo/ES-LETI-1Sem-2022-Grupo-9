@@ -11,3 +11,6 @@ Funcionalidades Não Implementadas: Visualização da indisponibilidade dos memb
 Possíveis melhorias: Poder adicionar diretamente na app o número de pessoas que constituiem o grupo e adicionar os respetivos URL's de cada membro.
 
 Erros: O texto do Sumário às vezes aparece fora do slot associado e também repete uma palavra.
+main
+
+Visualização_de_horários
